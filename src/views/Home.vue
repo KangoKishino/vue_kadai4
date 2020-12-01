@@ -24,6 +24,8 @@
         </tr>
       </tbody>
     </table>
+    <p v-if="this.$store.getters.signUpMessage" class="mt-3"> {{ this.$store.getters.signUpMessage }} </p>
+    <p v-if="this.$store.getters.signUpErrorMessage" class="error-message mt-3"> {{ this.$store.getters.signUpErrorMessage }} </p>
     <button type="button" @click="signUp" class="btn btn-primary mt-3">新規登録</button>
     <div>
       ログインはこちらから
@@ -32,8 +34,6 @@
 </template>
 
 <script>
-// @ is an alias to /src
-import firebase from 'firebase'
 
 export default {
   data() {
@@ -43,19 +43,13 @@ export default {
       password: ''
     }
   },
+  created() {
+      this.$store.dispatch('initMessage')
+  },
   methods: {
     signUp() {
-      firebase.auth().createUserWithEmailAndPassword(this.mailAddress, this.password)
-      .then(() => {
-        this.userName = ''
-        this.mailAddress = ''
-        this.password = ''
-        alert('登録できました')
-      })
-      .catch((error) => {
-        alert(error)
-      })
-    }
+      this.$store.dispatch('signUp', { mailAddress: this.mailAddress, password: this.password } )
+    },
   }
 }
 </script>
@@ -64,5 +58,8 @@ export default {
 table {
   margin-left: auto;
   margin-right: auto;
+}
+.error-message {
+  color: red;
 }
 </style>
