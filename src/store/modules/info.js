@@ -39,9 +39,8 @@ export default {
         initMessage({ commit }) {
             commit('initMessage')
         },
-        signUp({ commit }, personal) {
-            // console.log(personal)
-            firebase.auth().createUserWithEmailAndPassword(personal.mailAddress, personal.password)
+        signUp({ commit }, { mailAddress, password }) {
+            firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
             .then(() => {
                 commit('signUp')
             })
