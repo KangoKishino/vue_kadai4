@@ -1,14 +1,8 @@
 <template>
-  <div class="home">
-    <h1>新規登録画面</h1>
+  <div class="signin">
+    <h1>ログイン画面</h1>
     <table class="mt-5">
       <tbody id="list">
-        <tr>
-          <td>ユーザ名</td>
-          <td>
-            <input type="text" v-model="userName" placeholder="userName">
-          </td>
-        </tr>
         <tr>
           <td>メールアドレス</td>
           <td>
@@ -25,9 +19,9 @@
     </table>
     <p v-if="this.$store.getters.signMessage" class="mt-3"> {{ this.$store.getters.signMessage }} </p>
     <p v-if="this.$store.getters.signErrorMessage" class="error-message mt-3"> {{ this.$store.getters.signErrorMessage }} </p>
-    <button type="button" @click="signUp" class="btn btn-primary mt-3">新規登録</button>
+    <button type="button" @click="signIn" class="btn btn-primary mt-3">ログイン</button>
     <div>
-      <router-link :to="{ name: 'Signin' }">ログインはこちらから</router-link>
+      <router-link :to="{ name: 'Home' }">新規登録はこちらから</router-link>
     </div>
   </div>
 </template>
@@ -37,7 +31,6 @@
 export default {
   data() {
     return {
-      userName: '',
       mailAddress: '',
       password: ''
     }
@@ -46,8 +39,8 @@ export default {
       this.$store.dispatch('initMessage')
   },
   methods: {
-    signUp() {
-      this.$store.dispatch('signUp', { mailAddress: this.mailAddress, password: this.password } )
+    signIn() {
+      this.$store.dispatch('signIn', { mailAddress: this.mailAddress, password: this.password } )
     },
   }
 }
