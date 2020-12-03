@@ -12,15 +12,11 @@ export default {
             state.signMessage = ''
             state.signErrorMessage = ''
         },
-        signUp(state) {
+        setSignMessage(state, message) {
             state.signErrorMessage = ''
-            state.signMessage = '✔︎登録完了しました'
+            state.signMessage = message
         },
-        signIn(state) {
-            state.signErrorMessage = ''
-            state.signMessage = '✔︎ログインしました'
-        },
-        signError(state, errorCode) {
+        setSignErrorMessage(state, errorCode) {
             state.signMessage = ''
             if (errorCode === 'auth/invalid-email') {
                 state.signErrorMessage = '※正しいメールアドレスを入力してください'
@@ -48,21 +44,23 @@ export default {
         signUp({ commit }, { mailAddress, password }) {
             firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
             .then(() => {
-                commit('signUp')
+                const message = '✔︎登録完了しました'
+                commit('setSignMessage', message)
             })
             .catch((error) => {
                 const errorCode = error.code
-                commit('signError', errorCode)
+                commit('setSignErrorMessage', errorCode)
             })
         },
         signIn({ commit }, { mailAddress, password}) {
             firebase.auth().signInWithEmailAndPassword(mailAddress, password)
             .then(() => {
-                commit('signIn')
+                const message = '✔︎ログインしました'
+                commit('setSignMessage', message)
             })
             .catch((error) => {
                 const errorCode = error.code
-                commit('signError', errorCode)
+                commit('setSignErrorMessage', errorCode)
             })
         }
     }
