@@ -3,36 +3,38 @@ import firebase from 'firebase'
 export default {
     state() {
         return {
-            signUpMessage: '',
-            signUpErrorMessage: ''
+            signMessage: '',
+            signErrorMessage: ''
         }
     },
     mutations: {
         initMessage(state) {
-            state.signUpMessage = ''
-            state.signUpErrorMessage = ''
+            state.signMessage = ''
+            state.signErrorMessage = ''
         },
-        signUp(state) {
-            state.signUpErrorMessage = ''
-            state.signUpMessage = '✔︎登録完了しました'
+        setSignMessage(state, message) {
+            state.signErrorMessage = ''
+            state.signMessage = message
         },
-        signUpError(state, errorCode) {
-            state.signUpMessage = ''
+        setSignErrorMessage(state, errorCode) {
+            state.signMessage = ''
             if (errorCode === 'auth/invalid-email') {
-                state.signUpErrorMessage = '※正しいメールアドレスを入力してください'
+                state.signErrorMessage = '※正しいメールアドレスを入力してください'
             } else if (errorCode === 'auth/email-already-in-use'){
-                state.signUpErrorMessage = '※このメールアドレスは既に登録されています'
+                state.signErrorMessage = '※このメールアドレスは既に登録されています'
             } else if (errorCode === 'auth/weak-password') {
-                state.signUpErrorMessage = '※パスワードは6文字以上入力してください'
+                state.signErrorMessage = '※パスワードは6文字以上入力してください'
+            } else if (errorCode === 'auth/wrong-password'){
+                state.signErrorMessage = '※パスワードが違います'
             }
         }
     },
     getters: {
-        signUpMessage(state) {
-            return state.signUpMessage
+        signMessage(state) {
+            return state.signMessage
         },
-        signUpErrorMessage(state) {
-            return state.signUpErrorMessage
+        signErrorMessage(state) {
+            return state.signErrorMessage
         }
     },
     actions: {
@@ -42,11 +44,23 @@ export default {
         signUp({ commit }, { mailAddress, password }) {
             firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
             .then(() => {
-                commit('signUp')
+                const message = '✔︎登録完了しました'
+                commit('setSignMessage', message)
             })
             .catch((error) => {
                 const errorCode = error.code
-                commit('signUpError', errorCode)
+                commit('setSignErrorMessage', errorCode)
+            })
+        },
+        signIn({ commit }, { mailAddress, password}) {
+            firebase.auth().signInWithEmailAndPassword(mailAddress, password)
+            .then(() => {
+                const message = '✔︎ログインしました'
+                commit('setSignMessage', message)
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                commit('setSignErrorMessage', errorCode)
             })
         }
     }
