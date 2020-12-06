@@ -17,7 +17,6 @@
         </tr>
       </tbody>
     </table>
-    <p v-if="this.$store.getters.signMessage" class="mt-3"> {{ this.$store.getters.signMessage }} </p>
     <p v-if="this.$store.getters.signErrorMessage" class="error-message mt-3"> {{ this.$store.getters.signErrorMessage }} </p>
     <button type="button" @click="signIn" class="btn btn-primary mt-3">ログイン</button>
     <div>
@@ -40,7 +39,11 @@ export default {
   },
   methods: {
     signIn() {
-      this.$store.dispatch('signIn', { mailAddress: this.mailAddress, password: this.password } )
+      this.$store.dispatch('signIn', {
+        mailAddress: this.mailAddress,
+        password: this.password,
+        that: this
+      })
     },
   }
 }
