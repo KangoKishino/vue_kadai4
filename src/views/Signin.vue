@@ -41,10 +41,16 @@ export default {
     signIn() {
       this.$store.dispatch('signIn', {
         mailAddress: this.mailAddress,
-        password: this.password,
-        that: this
+        password: this.password
       })
     },
+  },
+  mounted() {
+    this.$store.subscribe(mutation => {
+      if(mutation.type === 'setSignInUser') {
+        this.$router.push({ name: 'Dashboard' })
+      }
+    })
   }
 }
 </script>

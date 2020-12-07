@@ -52,7 +52,7 @@ export default {
         initMessage({ commit }) {
             commit('initMessage')
         },
-        signUp({ getters, commit }, { userName, mailAddress, password, that }) {
+        signUp({ getters, commit }, { userName, mailAddress, password }) {
             if(!userName) {
                 const errorCode = 'userName-undefine'
                 commit('setSignErrorMessage', errorCode)
@@ -63,10 +63,10 @@ export default {
                 const user = firebase.auth().currentUser
                 user.updateProfile({
                     displayName: userName
-                }).then(function() {
+                })
+                .then(() => {
                     commit('setSignInUser')
                     firebase.database().ref(`users/${getters.signInUser.uid}`).set({balance: 1000})
-                    that.$router.push({ name: 'Dashboard' })
                 })
             })
             .catch((error) => {
@@ -74,11 +74,10 @@ export default {
                 commit('setSignErrorMessage', errorCode)
             })
         },
-        signIn({ commit }, { mailAddress, password, that}) {
+        signIn({ commit }, { mailAddress, password }) {
             firebase.auth().signInWithEmailAndPassword(mailAddress, password)
             .then(() => {
                 commit('setSignInUser')
-                that.$router.push({ name: 'Dashboard' })
             })
             .catch((error) => {
                 const errorCode = error.code
@@ -88,7 +87,7 @@ export default {
         fetchBalance({ getters, commit }) {
             const balanceRef = firebase.database().ref(`users/${getters.signInUser.uid}`)
             balanceRef.on('value', function(snapshot) {
-                let balance = snapshot.val()
+                const balance = snapshot.val()
                 commit('setMyBalance', balance)
             })
         }
