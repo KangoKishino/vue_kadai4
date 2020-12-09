@@ -43,14 +43,10 @@ export default {
         mailAddress: this.mailAddress,
         password: this.password
       })
-    },
-  },
-  mounted() {
-    this.$store.subscribe(mutation => {
-      if(mutation.type === 'setSignInUser') {
+      .then(() => {
         this.$router.push({ name: 'Dashboard' })
-      }
-    })
+      })
+    },
   }
 }
 </script>
