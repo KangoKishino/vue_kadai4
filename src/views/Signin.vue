@@ -35,7 +35,7 @@ export default {
     }
   },
   created() {
-      this.$store.dispatch('initMessage')
+    this.$store.dispatch('initMessage')
   },
   methods: {
     signIn() {

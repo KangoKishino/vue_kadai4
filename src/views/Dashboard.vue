@@ -8,14 +8,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  created() {
-    this.$store.dispatch('fetchBalance')
-  },
-}
-</script>
-
 <style>
 .my-information {
   padding: 2.5% 0;

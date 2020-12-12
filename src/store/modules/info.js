@@ -52,42 +52,40 @@ export default {
         initMessage({ commit }) {
             commit('initMessage')
         },
-        signUp({ getters, commit }, { userName, mailAddress, password }) {
-            return new Promise((resolve) => {
-                if(!userName) {
-                    const errorCode = 'userName-undefine'
-                    commit('setSignErrorMessage', errorCode)
-                    return
-                }
-                firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
-                .then(() => {
-                    const user = firebase.auth().currentUser
-                    user.updateProfile({
-                        displayName: userName
-                    })
-                    .then(() => {
-                        commit('setSignInUser')
-                        firebase.database().ref(`users/${getters.signInUser.uid}`).set({balance: 1000})
-                        resolve()
-                    })
+        signUp({ getters, dispatch, commit }, { userName, mailAddress, password }) {
+            if(!userName) {
+                const errorCode = 'userName-undefine'
+                commit('setSignErrorMessage', errorCode)
+                return Promise.reject()
+            }
+            return firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
+            .then(() => {
+                const user = firebase.auth().currentUser
+                user.updateProfile({
+                    displayName: userName
                 })
-                .catch((error) => {
-                    const errorCode = error.code
-                    commit('setSignErrorMessage', errorCode)
-                })
-            })
-        },
-        signIn({ commit }, { mailAddress, password }) {
-            return new Promise((resolve) => {
-                firebase.auth().signInWithEmailAndPassword(mailAddress, password)
                 .then(() => {
                     commit('setSignInUser')
-                    resolve()
+                    firebase.database().ref(`users/${getters.signInUser.uid}`).set({balance: 1000})
+                    dispatch('fetchBalance')
                 })
-                .catch((error) => {
-                    const errorCode = error.code
-                    commit('setSignErrorMessage', errorCode)
-                })
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                commit('setSignErrorMessage', errorCode)
+                return Promise.reject()
+            })
+        },
+        signIn({ dispatch, commit }, { mailAddress, password }) {
+            return firebase.auth().signInWithEmailAndPassword(mailAddress, password)
+            .then(() => {
+                commit('setSignInUser')
+                dispatch('fetchBalance')
+            })
+            .catch((error) => {
+                const errorCode = error.code
+                commit('setSignErrorMessage', errorCode)
+                return Promise.reject()
             })
         },
         fetchBalance({ getters, commit }) {
