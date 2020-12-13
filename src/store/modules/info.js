@@ -53,11 +53,6 @@ export default {
             commit('initMessage')
         },
         signUp({ getters, dispatch, commit }, { userName, mailAddress, password }) {
-            if(!userName) {
-                const errorCode = 'userName-undefine'
-                commit('setSignErrorMessage', errorCode)
-                return Promise.reject()
-            }
             return firebase.auth().createUserWithEmailAndPassword(mailAddress, password)
             .then(() => {
                 const user = firebase.auth().currentUser

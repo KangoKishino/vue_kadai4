@@ -45,6 +45,11 @@ export default {
   },
   methods: {
     signUp() {
+      if(!this.userName) {
+        const errorCode = 'userName-undefine'
+        this.$store.commit('setSignErrorMessage', errorCode)
+        return
+      }
       this.$store.dispatch('signUp', {
         userName: this.userName,
         mailAddress: this.mailAddress,
