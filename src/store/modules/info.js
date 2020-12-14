@@ -35,6 +35,9 @@ export default {
         },
         setMyBalance(state, balance) {
             state.myBalance = balance.balance
+        },
+        deleteSignInUser(state) {
+            state.signInUser = ''
         }
     },
     getters: {
@@ -89,6 +92,15 @@ export default {
                 const balance = snapshot.val()
                 commit('setMyBalance', balance)
             })
-        }
+        },
+        signOut({ commit }) {
+            return firebase.auth().signOut()
+            .then(() => {
+                commit('deleteSignInUser')
+            })
+            .catch(() => {
+                return Promise.reject()
+            })
+        },
     }
 }
