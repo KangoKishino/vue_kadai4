@@ -18,9 +18,9 @@ export default {
   methods: {
     signOut() {
       this.$store.dispatch('signOut')
-      .then(() => {
-        this.$router.push({ name: 'Signin' })
-      })
+        .then(() => {
+          this.$router.push({ name: 'Signin' })
+        })
     },
   }
 }
