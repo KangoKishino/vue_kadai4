@@ -5,7 +5,8 @@ export default {
         return {
             signInUser: '',
             signErrorMessage: '',
-            myBalance: ''
+            myBalance: '',
+            userList: []
         }
     },
     mutations: {
@@ -36,6 +37,9 @@ export default {
         setMyBalance(state, balance) {
             state.myBalance = balance.balance
         },
+        setUserList(state, user) {
+            state.userList = user
+        },
         deleteSignInUser(state) {
             state.signInUser = ''
         }
@@ -49,6 +53,9 @@ export default {
         },
         myBalance(state) {
             return state.myBalance
+        },
+        userList(state) {
+            return state.userList
         }
     },
     actions: {
@@ -62,11 +69,14 @@ export default {
                     user.updateProfile({
                         displayName: userName
                     })
-                    .then(() => {
-                        commit('setSignInUser')
-                        firebase.database().ref(`users/${getters.signInUser.uid}`).set({balance: 1000})
-                        dispatch('fetchBalance')
-                    })
+                        .then(() => {
+                            commit('setSignInUser')
+                            firebase.database().ref(`users/${getters.signInUser.uid}`).set({
+                                name: userName,
+                                balance: 1000
+                            })
+                            dispatch('fetchBalance')
+                        })
                 })
                 .catch((error) => {
                     const errorCode = error.code
@@ -91,6 +101,13 @@ export default {
             balanceRef.on('value', function(snapshot) {
                 const balance = snapshot.val()
                 commit('setMyBalance', balance)
+            })
+        },
+        fetchUser({ commit }) {
+            const userRef = firebase.database().ref('users')
+            userRef.on('value', function(snapshot) {
+                const user = snapshot.val()
+                commit('setUserList', user)
             })
         },
         signOut({ commit }) {
