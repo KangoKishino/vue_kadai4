@@ -22,7 +22,7 @@
           <td>{{ todo.name }}</td>
           <td></td>
           <td><button @click="openWalletModal(todo)" type="button" class="btn btn-primary ml-2">walletを見る</button></td>
-          <td><button type="button" class="btn btn-primary ml-2">送る</button></td>
+          <td><button @click="openTransModal(todo, key)" type="button" class="btn btn-primary ml-2">送る</button></td>
         </tr>
       </tbody>
     </table>
@@ -32,6 +32,15 @@
       <p> {{ otherUser.balance }} </p>
       <template slot="footer">
         <button class="btn btn-primary" @click="closeWalletModal()">close</button>
+      </template>
+    </ModalWindow>
+
+    <ModalWindow @close="closeTransModal()" v-show="showTrans">
+      <p>あなたの残高{{ this.$store.getters.myBalance }}</p>
+      <p>送る金額</p>
+      <div><input type="number" v-model="transPrice"></div>
+      <template slot="footer">
+        <button class="btn btn-primary" @click="processRemittance()">送信</button>
       </template>
     </ModalWindow>
 
@@ -62,9 +71,33 @@ export default {
       this.otherUser.name = todo.name
       this.showWallet = true
     },
+    openTransModal: function(todo, key){
+      this.showTrans = true
+      this.otherUser.uid = key
+      this.otherUser.balance = todo.balance
+      this.otherUser.name = todo.name
+    },
     closeWalletModal: function(){
       this.showWallet = false
     },
+    closeTransModal: function(){
+      this.transPrice = ''
+      this.showTrans = false
+    },
+    processRemittance() {
+      if(this.transPrice <= this.$store.getters.myBalance && this.transPrice >= 0) {
+        this.$store.dispatch('processRemittance', {
+          receiveUser: this.otherUser,
+          newMyBalance: this.$store.getters.myBalance - this.transPrice,
+          newReceivedBalance: Number(this.otherUser.balance) + Number(this.transPrice)
+        })
+          .then(() => {
+            this.closeTransModal()
+          })
+      } else {
+        this.closeTransModal()
+      }
+    }
   },
   mounted() {
     this.$store.subscribe(mutation => {
@@ -78,7 +111,9 @@ export default {
     return {
       filteredList: [],
       showWallet: false,
+      showTrans: false,
       otherUser: [],
+      transPrice: ''
     }
   }
 }
