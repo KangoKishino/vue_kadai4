@@ -125,13 +125,23 @@ export default {
                 })
         },
         processRemittance({ getters, commit }, { receiveUser, newMyBalance, newReceivedBalance }) {
-            firebase.database().ref(`users/${getters.signInUser.uid}`).update({
-                balance: newMyBalance
+            const myDataRef = firebase.database().ref(`users/${getters.signInUser.uid}`)
+            myDataRef.transaction((currentData) => {
+                myDataRef.update({
+                    balance: newMyBalance
+                })
+                    .then(() => {
+                        firebase.database().ref(`users/${receiveUser.uid}`).update({
+                            balance: newReceivedBalance
+                        })
+                            .then(() => {
+                                commit('updateMyBalance', newMyBalance)
+                            })
+                            .catch(() => {
+                                return currentData  
+                            })
+                    })
             })
-            firebase.database().ref(`users/${receiveUser.uid}`).update({
-                balance: newReceivedBalance
-            })
-            commit('updateMyBalance', newMyBalance)
         }
     }
 }
