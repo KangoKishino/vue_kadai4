@@ -130,16 +130,17 @@ export default {
                 myDataRef.update({
                     balance: newMyBalance
                 })
+                    .catch(() => {
+                        return currentData  
+                    })
+                firebase.database().ref(`users/${receiveUser.uid}`).update({
+                    balance: newReceivedBalance
+                })
                     .then(() => {
-                        firebase.database().ref(`users/${receiveUser.uid}`).update({
-                            balance: newReceivedBalance
-                        })
-                            .then(() => {
-                                commit('updateMyBalance', newMyBalance)
-                            })
-                            .catch(() => {
-                                return currentData  
-                            })
+                        commit('updateMyBalance', newMyBalance)
+                    })
+                    .catch(() => {
+                        return currentData  
                     })
             })
         }
