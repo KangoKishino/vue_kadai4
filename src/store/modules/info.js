@@ -40,8 +40,13 @@ export default {
         setUserList(state, user) {
             state.userList = user
         },
+        updateMyBalance(state, newMyBalance) {
+            state.myBalance = newMyBalance
+        },
         deleteSignInUser(state) {
             state.signInUser = ''
+            state.myBalance = ''
+            state.userList = []
         }
     },
     getters: {
@@ -119,5 +124,25 @@ export default {
                     return Promise.reject()
                 })
         },
+        processRemittance({ getters, commit }, { receiveUser, newMyBalance, newReceivedBalance }) {
+            const myDataRef = firebase.database().ref(`users/${getters.signInUser.uid}`)
+            myDataRef.transaction((currentData) => {
+                myDataRef.update({
+                    balance: newMyBalance
+                })
+                    .catch(() => {
+                        return currentData  
+                    })
+                firebase.database().ref(`users/${receiveUser.uid}`).update({
+                    balance: newReceivedBalance
+                })
+                    .then(() => {
+                        commit('updateMyBalance', newMyBalance)
+                    })
+                    .catch(() => {
+                        return currentData  
+                    })
+            })
+        }
     }
 }
