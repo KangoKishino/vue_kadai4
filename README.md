@@ -1,4 +1,4 @@
-# vue_kadai4
+# vue_throw_money
 
 ## Project setup
 ```
